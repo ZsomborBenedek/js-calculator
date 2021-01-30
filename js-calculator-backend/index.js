@@ -1,6 +1,7 @@
 const express = require('express');
-const app = express();
-const port = parseInt(process.env.PORT, 10) || 8080;
+const app = express(),
+   json = express.json,
+   port = parseInt(process.env.PORT, 10) || 8080;
 
 
 // Get the memory
