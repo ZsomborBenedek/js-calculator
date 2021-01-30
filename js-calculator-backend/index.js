@@ -8,9 +8,14 @@ const fs = require('fs');
 app.get('/mem', (req, res) => {
    fs.readFile(__dirname + '/db/mem.json', (err, data) => {
       if (err) return console.error(err);
-      data = JSON.parse(data);
-      console.log(data);
-      res.json(data);
+      try {
+         data = JSON.parse(data);
+         console.log(data);
+         res.json(data);
+      } catch (error) {
+         console.error(error);
+         res.sendStatus(400);
+      }
    });
 });
 
@@ -18,12 +23,18 @@ app.get('/mem', (req, res) => {
 app.post('/mem', json, (req, res) => {
    fs.readFile(__dirname + '/db/mem.json', (err, data) => {
       if (err) return console.error(err);
-      data = JSON.parse(data);
-      data.id = req.body.id;
-      data.value = req.body.value;
+      try {
+         data = JSON.parse(data);
+         data.uid = req.body.uid;
+         data.value = req.body.value;
+      } catch (error) {
+         console.error(error);
+         res.sendStatus(400);
+      }
       fs.writeFile(__dirname + '/db/mem.json', JSON.stringify(data), (err) => {
          if (err) return console.error(err);
-         res.sendStatus(200);
+         console.log(data);
+         res.json(data);
       });
    });
 });
