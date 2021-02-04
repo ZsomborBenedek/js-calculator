@@ -1,11 +1,11 @@
 const express = require('express');
 const app = express(),
    json = express.json(),
-   port = parseInt(process.env.PORT, 10) || 8080;
+   port = parseInt(process.env.PORT, 10) || 3000;
 const fs = require('fs');
 
 // Get the memory
-app.get('/mem', (req, res) => {
+app.get('/api/mem', (req, res) => {
    fs.readFile(__dirname + '/db/mem.json', (err, data) => {
       if (err) return console.error(err);
       try {
@@ -20,13 +20,13 @@ app.get('/mem', (req, res) => {
 });
 
 // Set the memory
-app.post('/mem', json, (req, res) => {
+app.post('/api/mem', json, (req, res) => {
    fs.readFile(__dirname + '/db/mem.json', (err, data) => {
       if (err) return console.error(err);
       try {
          data = JSON.parse(data);
          data.uid = req.body.uid;
-         data.value = req.body.value;
+         data.value = parseInt(req.body.value);
       } catch (error) {
          console.error(error);
          res.sendStatus(400);
