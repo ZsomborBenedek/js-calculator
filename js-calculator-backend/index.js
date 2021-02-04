@@ -1,42 +1,47 @@
 const express = require('express');
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 const app = express(),
    json = express.json(),
    port = parseInt(process.env.PORT, 10) || 3000;
-const fs = require('fs');
+
+const sessionStore = new FileStore({ path: __dirname + '/sessions/' });
+
+app.use(session({
+   secret: 'reEQvr5hftvdtvgss54cIc4g',
+   resave: false,
+   saveUninitialized: false,
+   store: sessionStore,
+   cookie: { maxAge: 3600000, secure: false, httpOnly: true }
+}));
 
 // Get the memory
 app.get('/api/mem', (req, res) => {
-   fs.readFile(__dirname + '/db/mem.json', (err, data) => {
-      if (err) return console.error(err);
-      try {
-         data = JSON.parse(data);
-         console.log(data);
-         res.json(data);
-      } catch (error) {
-         console.error(error);
-         res.sendStatus(400);
-      }
-   });
+   try {
+      sessionStore.get(req.sessionID, function (err, session) {
+         if (session) {
+            return err ? res.sendStatus(500) : res.json({ "memory": session.memory });
+         } else {
+            return res.sendStatus(404);
+         }
+      });
+   } catch (error) {
+      console.error(error);
+      return res.sendStatus(500);
+   }
 });
 
 // Set the memory
 app.post('/api/mem', json, (req, res) => {
-   fs.readFile(__dirname + '/db/mem.json', (err, data) => {
-      if (err) return console.error(err);
-      try {
-         data = JSON.parse(data);
-         data.uid = req.body.uid;
-         data.value = parseInt(req.body.value);
-      } catch (error) {
-         console.error(error);
-         res.sendStatus(400);
-      }
-      fs.writeFile(__dirname + '/db/mem.json', JSON.stringify(data), (err) => {
-         if (err) return console.error(err);
-         console.log(data);
-         res.json(data);
+   try {
+      req.session.memory = parseInt(req.body.memory);
+      sessionStore.set(req.sessionID, req.session, function (err) {
+         return err ? res.sendStatus(500) : res.sendStatus(200);
       });
-   });
+   } catch (error) {
+      console.error(error);
+      return res.sendStatus(500);
+   }
 });
 
 app.listen(port, () => {
