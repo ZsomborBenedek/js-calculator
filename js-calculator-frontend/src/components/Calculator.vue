@@ -24,7 +24,7 @@
 </template>
 
 <script>
-// import memApi from "../api/memoryApi.js";
+import memApi from "../api/memoryApi.js";
 
 export default {
   data() {
@@ -75,32 +75,27 @@ export default {
       this.display = this.operand(Number(this.previous), Number(this.display));
       this.previous = null;
     },
-    load() {
-      // memApi
-      //   .get("/mem")
-      //   .then(function (response) {
-      //     console.log(response);
-      //     //   console.log(this.display);
-      //     //   this.display = response.data.value;
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     //   this.display = error;
-      //   });
+    async load() {
+      this.display = await memApi
+        .get("/mem")
+        .then(function (response) {
+          return response.data.memory;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
     save() {
-      // memApi
-      //   .post("/mem", {
-      //     memory: this.display,
-      //   })
-      //   .then(function (response) {
-      //     console.log(response);
-      //     //   this.display = response.data.value;
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     //   this.display = error;
-      //   });
+      memApi
+        .post("/mem", {
+          memory: this.display,
+        })
+        .then(function (response) {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
     },
   },
 };
