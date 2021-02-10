@@ -76,7 +76,7 @@ export default {
       this.previous = null;
     },
     async load() {
-      this.display = await memApi
+      let mem = await memApi
         .get("/mem")
         .then(function (response) {
           return response.data.memory;
@@ -84,6 +84,7 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
+      if (mem) this.display = mem;
     },
     save() {
       memApi
@@ -124,7 +125,7 @@ export default {
   font-size: 3rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  direction: rtl;
+  /* direction: rtl; */
   padding: 0 0.8rem;
 }
 .zero {
