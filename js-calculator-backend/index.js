@@ -17,7 +17,7 @@ app.use(session({
 }));
 
 app.use(cors({
-   origin: ['http://localhost:3000'],
+   origin: ['http://localhost:8080'],
    methods: ['GET', 'POST'],
    credentials: true
 }));
@@ -28,10 +28,8 @@ app.get('/api/mem', (req, res) => {
    try {
       sessionStore.get(req.sessionID, function (err, session) {
          if (session) {
-            console.log('session found')
             return err ? res.sendStatus(500) : res.json({ "memory": session.memory });
          } else {
-            console.log('session not found')
             return res.sendStatus(404);
          }
       });
